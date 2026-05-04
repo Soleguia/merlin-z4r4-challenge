@@ -1,0 +1,240 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+}
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.imageSection {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius);
+}
+
+.image {
+  object-fit: contain;
+  padding: var(--spacing-md);
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.brand {
+  font-size: 14px;
+  color: var(--color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.model {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.price {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.selectors {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.fieldset {
+  border: none;
+  padding: 0;
+}
+
+.legend {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.optionLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  cursor: pointer;
+}
+
+.radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.colorSwatch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: var(--border-width) solid var(--color-surface);
+  transition: transform var(--transition-fast);
+}
+
+.checkmark {
+  color: white;
+  font-size: 14px;
+  text-shadow: 0 0 2px black;
+}
+
+.storageOption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: var(--border-width) solid var(--color-surface);
+  border-radius: var(--border-radius);
+  font-size: 14px;
+  transition: all var(--transition-fast);
+  
+  &.selected,
+  &:has(+ input:checked) {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary);
+    color: var(--color-background);
+  }
+}
+
+.optionText {
+  font-size: 12px;
+  color: var(--color-secondary);
+}
+
+.addButton {
+  margin-top: var(--spacing-md);
+  width: 100%;
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--color-secondary);
+  text-align: center;
+}
+
+.error {
+  padding: var(--spacing-lg);
+  color: var(--color-error);
+  text-align: center;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.specs,
+.description,
+.similar {
+  margin-top: var(--spacing-xl);
+}
+
+.specList {
+  display: flex;
+  flex-direction: column;
+}
+
+.specItem {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-sm) 0;
+  border-bottom: var(--border-width) solid var(--color-surface);
+  
+  dt {
+    font-weight: 600;
+    color: var(--color-primary);
+  }
+  
+  dd {
+    color: var(--color-secondary);
+  }
+}
+
+.description p {
+  color: var(--color-secondary);
+  line-height: 1.6;
+}
+
+.similarGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+}
+
+.similarItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  border: var(--border-width) solid var(--color-surface);
+  border-radius: var(--border-radius);
+  transition: box-shadow var(--transition-fast);
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.similarImage {
+  object-fit: contain;
+  position: relative;
+  aspect-ratio: 1;
+}
+
+.similarModel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.similarPrice {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+@media (min-width: 768px) {
+  .detail {
+    flex-direction: row;
+  }
+  
+  .imageSection {
+    flex: 1;
+    max-width: 500px;
+  }
+  
+  .info {
+    flex: 1;
+  }
+  
+  .similarGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

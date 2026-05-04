@@ -1,0 +1,47 @@
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 25%,
+    #eee 50%,
+    var(--color-surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border: var(--border-width) solid var(--color-surface);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.cardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+}
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.detailInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
