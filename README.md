@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Node](https://img.shields.io/badge/Node-18%2B-brightgreen)](https://nodejs.org)
 
-> E-commerce de telefonía móvil desarrollado con Next.js 14, TypeScript strict mode y SASS/BEM. Desplegado en Netlify: https://next-merlin-prueba-tecnica.netlify.app
+> E-commerce de telefonía móvil desarrollado con Next.js 14, TypeScript strict mode y SASS/BEM. Desplegado en Netlify: https://merlin-z4r4-challenge.netlify.app/
 
 ## Tabla de contenidos
 
