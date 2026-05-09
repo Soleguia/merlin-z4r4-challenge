@@ -1,68 +1,85 @@
+@use "../../styles/mixins" as *;
+
 .button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  @include flex(row, center, center);
+
   font-family: var(--font-family);
-  font-weight: 600;
+  font-weight: 500;
   text-align: center;
+
+  @include uppercase-text(0.12em);
+
+  white-space: nowrap;
   border: var(--border-width) solid transparent;
+  border-radius: 0;
   cursor: pointer;
   transition: all var(--transition-fast);
-  
+
   &:focus-visible {
-    outline: var(--border-width) solid var(--color-primary);
-    outline-offset: 2px;
+    @include focus-ring;
   }
-  
+
   &:disabled,
   &--disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    color: var(--color-button-disabled-text) !important;
+    background-color: var(--color-button-disabled-bg) !important;
+    border-color: var(--color-button-disabled-bg) !important;
+    cursor: not-allowed !important;
+    opacity: 1 !important;
   }
-  
+
   &--primary {
-    background-color: var(--color-primary);
     color: var(--color-background);
+    background-color: var(--color-primary);
     border-color: var(--color-primary);
-    
+
     &:hover:not(:disabled) {
-      background-color: var(--color-secondary);
-      border-color: var(--color-secondary);
+      background-color: var(--color-button-hover);
+      border-color: var(--color-button-hover);
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--color-button-active);
+      border-color: var(--color-button-active);
     }
   }
-  
+
   &--secondary {
-    background-color: transparent;
     color: var(--color-primary);
+    background-color: transparent;
     border-color: var(--color-primary);
-    
+
     &:hover:not(:disabled) {
       background-color: var(--color-surface);
     }
+
+    &:active:not(:disabled) {
+      background-color: var(--color-skeleton);
+    }
   }
-  
+
   &--ghost {
-    background-color: transparent;
     color: var(--color-primary);
+    background-color: transparent;
     border-color: transparent;
-    
+
     &:hover:not(:disabled) {
       background-color: var(--color-surface);
     }
   }
-  
+
   &--sm {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 12px;
+    padding: 10px var(--spacing-md-lg);
+    font-size: var(--font-size-sm);
   }
-  
+
   &--md {
-    padding: var(--spacing-sm) var(--spacing-md);
-    font-size: 14px;
+    padding: 14px var(--spacing-lg-xl);
+    font-size: var(--font-size-lg);
   }
-  
+
   &--lg {
-    padding: var(--spacing-md) var(--spacing-lg);
-    font-size: 16px;
+    padding: 18px 36px;
+    font-size: var(--font-size-xl);
   }
 }

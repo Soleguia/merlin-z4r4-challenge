@@ -1,71 +1,70 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { getProducts } from '@/services/api';
-import { ProductListItem } from '@/types';
+import { useEffect, useState, useRef } from 'react';
+
 import { Card } from '@/components/Card';
+import { Header } from '@/components/Header';
 import { CardSkeleton } from '@/components/skeletons';
 import { useSearch } from '@/hooks/useSearch';
+import { getProducts } from '@/services/api';
+import { ProductListItem } from '@/types';
+import { SEARCH_LABELS } from '@/constants/labels.search';
+
 import styles from './page.module.scss';
 
 export default function HomePage() {
-  const { query, setQuery, debouncedQuery, isSearching } = useSearch();
+  const { query, setQuery, debouncedQuery } = useSearch();
   const [products, setProducts] = useState<ProductListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const fetchProducts = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = (await getProducts({
-        search: debouncedQuery,
-        limit: 20,
-      })) as ProductListItem[];
-      setProducts(data);
-    } catch (e) {
-      setError('Error al cargar productos');
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  }, [debouncedQuery]);
+  const isSearchingRef = useRef(false);
 
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    isSearchingRef.current = query.length > 0;
+  }, [query]);
+
+  useEffect(() => {
+    const fetchProducts = async (search?: string) => {
+      setLoading(true);
+      setError(null);
+      if (search) {
+        setProducts([]);
+      }
+      try {
+        const data = (await getProducts({
+          search: search || undefined,
+          limit: 20,
+        })) as ProductListItem[];
+        const uniqueProducts = [...new Map(data.map(p => [p.id, p])).values()];
+        setProducts(uniqueProducts);
+      } catch (e) {
+        setError(SEARCH_LABELS.ERROR_LOADING_PRODUCTS);
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts(isSearchingRef.current ? debouncedQuery : undefined);
+  }, [debouncedQuery]);
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Móviles</h1>
-        <div className={styles.search}>
-          <label htmlFor="search-input" className="visually-hidden">
-            Buscar teléfonos
-          </label>
-          <input
-            id="search-input"
-            type="search"
-            placeholder="Buscar por marca o nombre..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className={styles.searchInput}
-            aria-describedby="results-count"
-          />
-        </div>
-        <p id="results-count" className={styles.results}>
-          {loading
-            ? 'Buscando...'
-            : `${products.length} resultado${products.length !== 1 ? 's' : ''}`}
-        </p>
-      </header>
+      <Header
+        query={query}
+        onSearch={setQuery}
+        resultsCount={products.length}
+        loading={loading}
+      />
 
       {error && <p className={styles.error}>{error}</p>}
 
-      <section className={styles.grid} aria-label="Lista de productos">
-        {loading || isSearching
+      <section className={styles.grid} aria-label="Product list">
+        {loading
           ? Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)
-          : products.map((product) => (
+          : query.length > 0 && products.length === 0
+            ? <p className={styles.noResults}>{SEARCH_LABELS.NO_PRODUCTS_FOUND}</p>
+            : products.map((product) => (
               <Card key={product.id} product={product} />
             ))}
       </section>

@@ -7,6 +7,7 @@ import {
   useEffect,
   ReactNode,
 } from 'react';
+
 import { CartItem } from '@/types';
 
 interface CartState {
@@ -20,7 +21,7 @@ type CartAction =
   | { type: 'CLEAR_CART' }
   | { type: 'LOAD_CART'; payload: CartItem[] };
 
-interface CartContextType {
+export interface CartContextType {
   items: CartItem[];
   addItem: (productId: string, colorName: string, storageCapacity: string) => void;
   removeItem: (productId: string, colorName: string, storageCapacity: string) => void;
@@ -38,21 +39,25 @@ function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case 'ADD_ITEM': {
       const { productId, colorName, storageCapacity } = action.payload;
+      const normalizedColor = colorName.trim();
+      const normalizedStorage = storageCapacity.trim();
+
       const existingIndex = state.items.findIndex(
         (item) =>
           item.productId === productId &&
-          item.colorName === colorName &&
-          item.storageCapacity === storageCapacity
+          item.colorName.trim() === normalizedColor &&
+          item.storageCapacity.trim() === normalizedStorage
       );
 
       if (existingIndex >= 0) {
-        const newItems = [...state.items];
-        newItems[existingIndex].quantity += 1;
+        const newItems = state.items.map((item, index) =>
+          index === existingIndex ? { ...item, quantity: item.quantity + 1 } : item
+        );
         return { items: newItems };
       }
 
       return {
-        items: [...state.items, { productId, colorName, storageCapacity, quantity: 1 }],
+        items: [...state.items, { productId, colorName: normalizedColor, storageCapacity: normalizedStorage, quantity: 1 }],
       };
     }
 
@@ -107,20 +112,23 @@ function cartReducer(state: CartState, action: CartAction): CartState {
   }
 }
 
-export function CartProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, { items: [] });
-
-  useEffect(() => {
-    const stored = localStorage.getItem(CART_STORAGE_KEY);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored) as CartItem[];
-        dispatch({ type: 'LOAD_CART', payload: parsed });
-      } catch {
-        // Invalid storage data
-      }
+function getInitialCart(): CartItem[] {
+  if (typeof window === 'undefined') return [];
+  const stored = localStorage.getItem(CART_STORAGE_KEY);
+  if (stored) {
+    try {
+      return JSON.parse(stored) as CartItem[];
+    } catch {
+      return [];
     }
-  }, []);
+  }
+  return [];
+}
+
+export function CartProvider({ children }: { children: ReactNode }) {
+  const [state, dispatch] = useReducer(cartReducer, { items: [] }, () => ({
+    items: getInitialCart(),
+  }));
 
   useEffect(() => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state.items));

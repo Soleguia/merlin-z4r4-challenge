@@ -1,0 +1,37 @@
+@use "tokens" as *;
+
+@mixin container-padding {
+  padding: 0 var(--spacing-md);
+
+  @media (min-width: $min-width-tablet) {
+    padding: 0 var(--spacing-xl-2xl);
+  }
+
+  @media (min-width: $min-width-desktop) {
+    padding: 0 var(--spacing-5xl);
+  }
+}
+
+@mixin sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--color-background);
+}
+
+@mixin focus-ring($offset: 2px) {
+  outline: 2px solid var(--color-primary);
+  outline-offset: $offset;
+}
+
+@mixin uppercase-text($spacing: 0.1em) {
+  letter-spacing: $spacing;
+  text-transform: uppercase;
+}
+
+@mixin flex($direction: row, $justify: flex-start, $align: stretch) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+}

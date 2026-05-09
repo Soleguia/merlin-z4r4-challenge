@@ -1,55 +1,113 @@
+@use "../../styles/mixins" as *;
+
 .card {
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  height: 100%;
+  text-decoration: none;
   background-color: var(--color-background);
-  border: var(--border-width) solid var(--color-surface);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  transition: box-shadow var(--transition-fast);
-  
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-block: var(--border-width) solid var(--color-secondary);
+  border-inline-end: var(--border-width) solid var(--color-secondary);
+  transition: background-color var(--transition-normal) ease-in-out;
+
+  &:first-child {
+    border-inline-start: var(--border-width) solid var(--color-secondary);
   }
-  
+
+  &::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 0;
+    height: 100%;
+    background-color: var(--color-primary);
+    transform: translateY(100%);
+    transition: transform var(--transition-slow) ease-in-out;
+  }
+
+  &:hover::before,
+  &:active::before {
+    transform: translateY(0);
+  }
+
   &:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
+    @include focus-ring(-2px);
+
+    z-index: 2;
   }
 }
 
-.imageWrapper {
+.card__imageWrapper {
   position: relative;
-  width: 100%;
+  z-index: 1;
+  padding: var(--spacing-md);
   aspect-ratio: 1;
-  background-color: var(--color-surface);
+  width: 100%;
+
+  @include flex;
 }
 
-.image {
+.card__image {
   object-fit: contain;
+  transition: transform var(--transition-slow) ease-in-out;
 }
 
-.info {
+.card:hover .card__image {
+  transform: scale(1.05);
+}
+
+.card__info {
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-block-start: var(--spacing-xl);
+}
+
+.card__details {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
-  padding: var(--spacing-md);
 }
 
-.brand {
-  font-size: 12px;
-  color: var(--color-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.card__brand {
+  font-size: var(--font-size-xs);
+  line-height: 1;
+  color: var(--color-muted);
+  transition: color var(--transition-normal) ease-in-out;
+
+  @include uppercase-text(0.08em);
 }
 
-.model {
-  font-size: 16px;
-  font-weight: 600;
+.card__name {
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  line-height: 1;
   color: var(--color-primary);
+  transition: color var(--transition-normal) ease-in-out;
+
+  @include uppercase-text(0.05em);
 }
 
-.price {
-  font-size: 18px;
-  font-weight: 700;
+.card__price {
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  white-space: nowrap;
   color: var(--color-primary);
+  transition: color var(--transition-normal) ease-in-out;
+
+  @include uppercase-text;
+}
+
+.card:hover .card__brand,
+.card:hover .card__name,
+.card:hover .card__price {
+  color: var(--color-background);
+  transition: color var(--transition-normal) ease-in-out;
 }

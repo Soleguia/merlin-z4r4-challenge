@@ -57,7 +57,8 @@ export interface CartItem {
 }
 
 export interface CartItemWithProduct extends CartItem {
-  product: Product;
+  product: Product | null;
   colorOption: ColorOption;
   storageOption: StorageOption;
+  error?: string;
 }

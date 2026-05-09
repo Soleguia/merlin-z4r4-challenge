@@ -2,7 +2,7 @@
   background: linear-gradient(
     90deg,
     var(--color-surface) 25%,
-    #eee 50%,
+    var(--color-skeleton) 50%,
     var(--color-surface) 75%
   );
   background-size: 200% 100%;
@@ -19,28 +19,28 @@
   }
 }
 
-.card {
+.skeleton__card {
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   border: var(--border-width) solid var(--color-surface);
   border-radius: var(--border-radius);
-  overflow: hidden;
 }
 
-.cardInfo {
+.skeleton__cardInfo {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
   padding: var(--spacing-md);
 }
 
-.detail {
+.skeleton__detail {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
 }
 
-.detailInfo {
+.skeleton__detailInfo {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);

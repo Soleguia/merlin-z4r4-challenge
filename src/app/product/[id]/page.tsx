@@ -1,13 +1,19 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { getProductById } from '@/services/api';
-import { Product, ColorOption, StorageOption } from '@/types';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState, useCallback } from 'react';
+
 import { Button } from '@/components/Button';
+import { Card } from '@/components/Card';
+import { Header } from '@/components/Header';
 import { ProductDetailSkeleton } from '@/components/skeletons';
+import { getProductById } from '@/services/api';
 import { useCart } from '@/store/CartContext';
+import { Product, ColorOption, StorageOption } from '@/types';
+import { PRODUCT_LABELS } from '@/constants/labels.product';
+import { LABELS } from '@/constants/labels.general';
+
 import styles from './page.module.scss';
 
 export default function ProductPage() {
@@ -31,16 +37,12 @@ export default function ProductPage() {
     try {
       const data = (await getProductById(productId)) as Product;
       setProduct(data);
-
-      if (data.colorOptions.length > 0) {
-        setSelectedColor(data.colorOptions[0]);
-      }
-      if (data.storageOptions.length > 0) {
-        setSelectedStorage(data.storageOptions[0]);
-        setCurrentPrice(data.basePrice + data.storageOptions[0].price);
-      }
+      // No initial selection as per user request
+      setSelectedColor(null);
+      setSelectedStorage(null);
+      setCurrentPrice(data.basePrice);
     } catch (e) {
-      setError('Error al cargar el producto');
+      setError(PRODUCT_LABELS.ERROR_LOADING_PRODUCT);
       console.error(e);
     } finally {
       setLoading(false);
@@ -52,8 +54,9 @@ export default function ProductPage() {
   }, [fetchProduct]);
 
   useEffect(() => {
-    if (product && selectedStorage) {
-      setCurrentPrice(product.basePrice + selectedStorage.price);
+    if (product) {
+      const storagePrice = selectedStorage?.price || 0;
+      setCurrentPrice(product.basePrice + storagePrice);
     }
   }, [product, selectedStorage]);
 
@@ -64,16 +67,15 @@ export default function ProductPage() {
     }
   };
 
-  const isValidSelection = selectedColor && selectedStorage;
+  const isValidSelection = selectedColor !== null && selectedStorage !== null;
 
-  const formattedPrice = new Intl.NumberFormat('es-ES', {
-    style: 'currency',
-    currency: 'EUR',
-  }).format(currentPrice);
+  const formattedPrice = `From ${new Intl.NumberFormat('es-ES', {
+    minimumFractionDigits: 0,
+  }).format(currentPrice)} EUR`;
 
   if (loading) {
     return (
-      <div className={styles.container}>
+      <div className={styles.container} role="status" aria-live="polite">
         <ProductDetailSkeleton />
       </div>
     );
@@ -81,84 +83,88 @@ export default function ProductPage() {
 
   if (error || !product) {
     return (
-      <div className={styles.container}>
-        <p className={styles.error}>{error || 'Producto no encontrado'}</p>
-        <Button onClick={() => router.push('/')}>Volver a la tienda</Button>
+      <div className={styles.productDetail__container} role="alert">
+        <p 
+          className={styles.productDetail__error} 
+          id="product-error"
+          aria-invalid="true"
+        >
+          {error || PRODUCT_LABELS.PRODUCT_NOT_FOUND}
+        </p>
+        <Button 
+          onClick={() => router.push('/')} 
+          aria-describedby="product-error"
+        >
+          {LABELS.BACK_TO_STORE}
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.detail}>
-        <div className={styles.imageSection}>
+    <div className={styles.productDetail__container}>
+      <Header showBack />
+      <div className={styles.productDetail__detail}>
+        <div className={styles.productDetail__imageSection}>
           <Image
             src={selectedColor?.imageUrl || product.colorOptions[0]?.imageUrl || ''}
             alt={`${product.brand} ${product.name}`}
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
-            className={styles.image}
+            className={styles.productDetail__image}
+            priority
           />
         </div>
 
-        <div className={styles.info}>
-          <span className={styles.brand}>{product.brand}</span>
-          <h1 className={styles.name}>{product.name}</h1>
-          <div className={styles.rating}>
-            {'★'.repeat(Math.floor(product.rating))}
-            {'☆'.repeat(5 - Math.floor(product.rating))}
-            <span className={styles.ratingValue}>{product.rating}</span>
-          </div>
-          <span className={styles.price}>{formattedPrice}</span>
+        <div className={styles.productDetail__info}>
+          <h1 className={styles.productDetail__name}>{product.name}</h1>
+          <span className={styles.productDetail__price}>{formattedPrice}</span>
 
-          <div className={styles.selectors}>
-            <fieldset className={styles.fieldset}>
-              <legend className={styles.legend}>Color</legend>
-              <div className={styles.options}>
-                {product.colorOptions.map((color) => (
-                  <label key={color.name} className={styles.optionLabel}>
-                    <input
-                      type="radio"
-                      name="color"
-                      value={color.name}
-                      checked={selectedColor?.name === color.name}
-                      onChange={() => setSelectedColor(color)}
-                      className={styles.radio}
-                    />
-                    <span
-                      className={styles.colorSwatch}
-                      style={{ backgroundColor: color.hexCode }}
-                    >
-                      {selectedColor?.name === color.name && (
-                        <span className={styles.checkmark}>✓</span>
-                      )}
-                    </span>
-                    <span className={styles.optionText}>{color.name}</span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-
-            <fieldset className={styles.fieldset}>
-              <legend className={styles.legend}>Almacenamiento</legend>
-              <div className={styles.options}>
+          <div className={styles.productDetail__selectors}>
+            <fieldset className={styles.productDetail__fieldset}>
+              <legend className={styles.productDetail__legend} id="storage-legend">{PRODUCT_LABELS.STORAGE_QUESTION}</legend>
+              <div className={styles.productDetail__options} role="radiogroup" aria-labelledby="storage-legend">
                 {product.storageOptions.map((storage) => (
-                  <label key={storage.capacity} className={styles.optionLabel}>
+                  <label key={storage.capacity} className={styles.productDetail__optionLabel}>
                     <input
                       type="radio"
                       name="storage"
                       value={storage.capacity}
                       checked={selectedStorage?.capacity === storage.capacity}
                       onChange={() => setSelectedStorage(storage)}
-                      className={styles.radio}
+                      className={styles.productDetail__radio}
+                      aria-describedby="storage-legend"
                     />
                     <span
-                      className={`${styles.storageOption} ${
-                        selectedStorage?.capacity === storage.capacity ? styles.selected : ''
-                      }`}
+                      className={`${styles.productDetail__storageOption} ${selectedStorage?.capacity === storage.capacity ? styles.selected : ''
+                        }`}
                     >
                       {storage.capacity}
                     </span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <fieldset className={styles.productDetail__fieldset}>
+              <legend className={styles.productDetail__legend} id="color-legend">{PRODUCT_LABELS.COLOR_QUESTION}</legend>
+              <div className={styles.productDetail__options} role="radiogroup" aria-labelledby="color-legend">
+                {product.colorOptions.map((color) => (
+                  <label key={color.name} className={styles.productDetail__optionLabel}>
+                    <input
+                      type="radio"
+                      name="color"
+                      value={color.name}
+                      checked={selectedColor?.name === color.name}
+                      onChange={() => setSelectedColor(color)}
+                      className={styles.productDetail__radio}
+                      aria-describedby="color-legend"
+                    />
+                    <span
+                      className={`${styles.productDetail__colorSwitch} ${selectedColor?.name === color.name ? styles.selected : ''
+                        }`}
+                      style={{ backgroundColor: color.hexCode }}
+                    />
                   </label>
                 ))}
               </div>
@@ -169,81 +175,52 @@ export default function ProductPage() {
             onClick={handleAddToCart}
             disabled={!isValidSelection}
             size="lg"
-            className={styles.addButton}
+            className={styles.productDetail__addButton}
           >
-            Añadir al carrito
+            {PRODUCT_LABELS.ADD_TO_CART}
           </Button>
-
-          {(!selectedColor || !selectedStorage) && (
-            <p className={styles.hint}>Selecciona color y almacenamiento</p>
-          )}
         </div>
       </div>
 
-      <section className={styles.description}>
-        <h2 className={styles.sectionTitle}>Descripción</h2>
-        <p>{product.description}</p>
-      </section>
-
-      <section className={styles.specs}>
-        <h2 className={styles.sectionTitle}>Especificaciones</h2>
-        <dl className={styles.specList}>
-          <div className={styles.specItem}>
-            <dt>Pantalla</dt>
-            <dd>{product.specs.screen}</dd>
+      <section className={styles.productDetail__specs}>
+        <h2 className={styles.productDetail__sectionTitle}>{PRODUCT_LABELS.SPECIFICATIONS}</h2>
+        <dl className={styles.productDetail__specList}>
+          <div className={styles.productDetail__specItem}>
+            <dt className={styles.productDetail__specItemSpecName}>BRAND</dt>
+            <dd className={styles.productDetail__specItemSpecInfo}>{product.brand}</dd>
           </div>
-          <div className={styles.specItem}>
-            <dt>Resolución</dt>
-            <dd>{product.specs.resolution}</dd>
+          <div className={styles.productDetail__specItem}>
+            <dt className={styles.productDetail__specItemSpecName}>NAME</dt>
+            <dd className={styles.productDetail__specItemSpecInfo}>{product.name}</dd>
           </div>
-          <div className={styles.specItem}>
-            <dt>Procesador</dt>
-            <dd>{product.specs.processor}</dd>
+          <div className={styles.productDetail__specItem}>
+            <dt className={styles.productDetail__specItemSpecName}>DESCRIPTION</dt>
+            <dd className={styles.productDetail__specItemSpecInfo}>{product.description}</dd>
           </div>
-          <div className={styles.specItem}>
-            <dt>Cámara principal</dt>
-            <dd>{product.specs.mainCamera}</dd>
-          </div>
-          <div className={styles.specItem}>
-            <dt>Cámara frontal</dt>
-            <dd>{product.specs.selfieCamera}</dd>
-          </div>
-          <div className={styles.specItem}>
-            <dt>Batería</dt>
-            <dd>{product.specs.battery}</dd>
-          </div>
-          <div className={styles.specItem}>
-            <dt>Sistema operativo</dt>
-            <dd>{product.specs.os}</dd>
-          </div>
-          <div className={styles.specItem}>
-            <dt>Refresco de pantalla</dt>
-            <dd>{product.specs.screenRefreshRate}</dd>
-          </div>
+          {Object.entries(product.specs).map(([key, value]) => (
+            <div key={key} className={styles.productDetail__specItem}>
+              <dt className={styles.productDetail__specItemSpecName}>{key.replace(/([A-Z])/g, ' $1').toUpperCase()}</dt>
+              <dd className={styles.productDetail__specItemSpecInfo}>{value}</dd>
+            </div>
+          ))}
         </dl>
       </section>
 
       {product.similarProducts.length > 0 && (
-        <section className={styles.similar}>
-          <h2 className={styles.sectionTitle}>Productos similares</h2>
-          <div className={styles.similarGrid}>
+        <section className={styles.productDetail__similar}>
+          <h2 className={styles.productDetail__sectionTitle}>{PRODUCT_LABELS.SIMILAR_ITEMS}</h2>
+          <div className={styles.productDetail__similarScroll}>
             {product.similarProducts.map((p) => (
-              <a key={p.id} href={`/product/${p.id}`} className={styles.similarItem}>
-                <Image
-                  src={p.imageUrl}
-                  alt={p.name}
-                  fill
-                  sizes="25vw"
-                  className={styles.similarImage}
-                />
-                <span className={styles.similarName}>{p.name}</span>
-                <span className={styles.similarPrice}>
-                  {new Intl.NumberFormat('es-ES', {
-                    style: 'currency',
-                    currency: 'EUR',
-                  }).format(p.basePrice)}
-                </span>
-              </a>
+              <Card
+                key={p.id}
+                product={{
+                  id: p.id,
+                  brand: p.brand,
+                  name: p.name,
+                  basePrice: p.basePrice,
+                  imageUrl: p.imageUrl,
+                }}
+              />
             ))}
           </div>
         </section>

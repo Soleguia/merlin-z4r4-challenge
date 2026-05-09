@@ -1,0 +1,27 @@
+@use "../../../../styles/tokens" as *;
+@use "../../../../styles/mixins" as *;
+
+.continueLink {
+  grid-area: continue;
+  width: 100%;
+  text-decoration: none;
+
+  &,
+  .continueBtn {
+    width: 100%;
+    font-size: var(--font-size-md);
+  }
+}
+
+.continueBtn {
+  width: 100%;
+}
+
+@media (min-width: $min-width-tablet) {
+  .continueLink {
+    &,
+    .continueBtn {
+      max-width: 200px;
+    }
+  }
+}

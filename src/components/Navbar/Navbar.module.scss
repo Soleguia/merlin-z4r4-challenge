@@ -1,18 +1,18 @@
+@use "../../styles/mixins" as *;
+
 .navbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background-color: var(--color-background);
+  @include sticky-header;
+
   border-bottom: var(--border-width) solid var(--color-surface);
 }
 
 .container {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  max-width: 1200px;
+  align-items: center;
   margin: 0 auto;
   padding: var(--spacing-md);
+  max-width: var(--max-width-desktop);
 }
 
 .logo {
@@ -22,9 +22,15 @@
 }
 
 .logoText {
-  font-size: 20px;
+  font-size: var(--font-size-3xl);
   font-weight: 700;
   color: var(--color-primary);
+}
+
+.logoImg {
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }
 
 .cart {
@@ -43,15 +49,14 @@
   position: absolute;
   top: -4px;
   right: -4px;
+  padding: 0 var(--spacing-xs);
   min-width: 18px;
   height: 18px;
-  padding: 0 var(--spacing-xs);
-  font-size: 11px;
+  font-size: var(--font-size-3xs);
   font-weight: 600;
   color: var(--color-background);
   background-color: var(--color-primary);
   border-radius: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+  @include flex(row, center, center);
 }

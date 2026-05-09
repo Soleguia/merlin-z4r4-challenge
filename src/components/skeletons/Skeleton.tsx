@@ -24,9 +24,9 @@ export function Skeleton({
 
 export function CardSkeleton() {
   return (
-    <div className={styles.card}>
+    <div className={styles.skeleton__card}>
       <Skeleton height="100%" borderRadius="0" />
-      <div className={styles.cardInfo}>
+      <div className={styles.skeleton__cardInfo}>
         <Skeleton width="40%" height="12px" />
         <Skeleton width="70%" height="16px" />
         <Skeleton width="30%" height="18px" />
@@ -37,9 +37,9 @@ export function CardSkeleton() {
 
 export function ProductDetailSkeleton() {
   return (
-    <div className={styles.detail}>
+    <div className={styles.skeleton__detail}>
       <Skeleton height="300px" borderRadius="var(--border-radius)" />
-      <div className={styles.detailInfo}>
+      <div className={styles.skeleton__detailInfo}>
         <Skeleton width="30%" height="12px" />
         <Skeleton width="60%" height="24px" />
         <Skeleton width="40%" height="18px" />

@@ -1,0 +1,66 @@
+@use "../../styles/mixins" as *;
+
+.header {
+  @include sticky-header;
+
+  width: 100%;
+}
+
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  padding: var(--spacing-lg) 0; // Removed horizontal padding
+  max-width: 100%;
+}
+
+.bottomRow {
+  margin: 0 auto;
+  padding: 0; // Removed horizontal padding
+  max-width: 100%;
+}
+
+
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.back {
+  display: inline-block;
+  padding: var(--spacing-lg) 0;
+  font-size: var(--font-size-md);
+  text-decoration: none;
+  color: var(--color-primary);
+
+  @include uppercase-text;
+}
+
+.logoImg {
+  width: auto;
+  height: 24px; // Consistent with minimalist look
+  object-fit: contain;
+}
+
+.cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm); // Space between icon and number
+  text-decoration: none;
+  color: var(--color-primary);
+}
+
+.cartIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.badge {
+  font-size: var(--font-size-lg-xl);
+  font-weight: 400;
+  line-height: .5;
+  color: var(--color-primary);
+}
