@@ -1,3 +1,4 @@
+@use "../../styles/tokens" as *;
 @use "../../styles/mixins" as *;
 
 .card {
@@ -10,13 +11,8 @@
   height: 100%;
   text-decoration: none;
   background-color: var(--color-background);
-  border-block: var(--border-width) solid var(--color-secondary);
-  border-inline-end: var(--border-width) solid var(--color-secondary);
+  border: var(--border-width) solid var(--color-secondary);
   transition: background-color var(--transition-normal) ease-in-out;
-
-  &:first-child {
-    border-inline-start: var(--border-width) solid var(--color-secondary);
-  }
 
   &::before {
     content: '';
@@ -46,11 +42,12 @@
 .card__imageWrapper {
   position: relative;
   z-index: 1;
+
+  @include flex;
+
   padding: var(--spacing-md);
   aspect-ratio: 1;
   width: 100%;
-
-  @include flex;
 }
 
 .card__image {

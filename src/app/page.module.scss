@@ -28,9 +28,8 @@
   grid-template-columns: repeat(1, 1fr);
   gap: 0;
   margin: 0 auto;
+  padding-block-end: var(--spacing-3xl);
   max-width: 100%;
-  border-top: var(--border-width) solid var(--color-secondary);
-  border-left: var(--border-width) solid var(--color-secondary);
 
   @media (min-width: $min-width-tablet) {
     grid-template-columns: repeat(2, 1fr);

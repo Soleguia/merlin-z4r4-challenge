@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useCart } from '@/store/CartContext';
 import { CartItemWithProduct, Product } from '@/types';
@@ -21,40 +21,40 @@ export default function CartPage() {
   const [loading, setLoading] = useState(true);
   const [totalPrice, setTotalPrice] = useState(0);
 
-  const loadProduct = useCallback(async (item: typeof items[number]): Promise<CartItemWithProduct | null> => {
-    try {
-      const product = (await getProductById(item.productId)) as Product;
-      const colorOption = product.colorOptions.find((c) => c.name === item.colorName);
-      const storageOption = product.storageOptions.find((s) => s.capacity === item.storageCapacity);
+  useEffect(() => {
+    async function loadProduct(item: typeof items[number]): Promise<CartItemWithProduct | null> {
+      try {
+        const product = (await getProductById(item.productId)) as Product;
+        const colorOption = product.colorOptions.find((c) => c.name === item.colorName);
+        const storageOption = product.storageOptions.find((s) => s.capacity === item.storageCapacity);
 
-      if (colorOption && storageOption) {
+        if (colorOption && storageOption) {
+          return {
+            ...item,
+            product,
+            colorOption,
+            storageOption,
+            error: undefined,
+          };
+        }
         return {
           ...item,
-          product,
-          colorOption,
-          storageOption,
-          error: undefined,
+          product: null,
+          colorOption: { name: item.colorName, hexCode: '', imageUrl: '' },
+          storageOption: { capacity: item.storageCapacity, price: 0 },
+          error: CART_LABELS.OPTION_NOT_AVAILABLE,
+        };
+      } catch {
+        return {
+          ...item,
+          product: null,
+          colorOption: { name: item.colorName, hexCode: '', imageUrl: '' },
+          storageOption: { capacity: item.storageCapacity, price: 0 },
+          error: CART_LABELS.FAILED_TO_LOAD_PRODUCT,
         };
       }
-      return {
-        ...item,
-        product: null,
-        colorOption: { name: item.colorName, hexCode: '', imageUrl: '' },
-        storageOption: { capacity: item.storageCapacity, price: 0 },
-        error: CART_LABELS.OPTION_NOT_AVAILABLE,
-      };
-    } catch {
-      return {
-        ...item,
-        product: null,
-        colorOption: { name: item.colorName, hexCode: '', imageUrl: '' },
-        storageOption: { capacity: item.storageCapacity, price: 0 },
-        error: CART_LABELS.FAILED_TO_LOAD_PRODUCT,
-      };
     }
-  }, [items]);
 
-  useEffect(() => {
     async function loadCartItems() {
       setLoading(true);
       const loadedItems: CartItemWithProduct[] = [];
@@ -70,8 +70,13 @@ export default function CartPage() {
       setLoading(false);
     }
 
-    loadCartItems();
-  }, [items, loadProduct]);
+    if (items.length > 0) {
+      loadCartItems();
+    } else {
+      setCartItems([]);
+      setLoading(false);
+    }
+  }, [items]);
 
   useEffect(() => {
     let total = 0;
@@ -92,13 +97,26 @@ export default function CartPage() {
   const handleRetry = async (index: number) => {
     const item = items[index];
     if (item) {
-      const loaded = await loadProduct(item);
-      if (loaded) {
-        setCartItems((prev) => {
-          const newItems = [...prev];
-          newItems[index] = loaded;
-          return newItems;
-        });
+      try {
+        const product = (await getProductById(item.productId)) as Product;
+        const colorOption = product.colorOptions.find((c) => c.name === item.colorName);
+        const storageOption = product.storageOptions.find((s) => s.capacity === item.storageCapacity);
+
+        if (colorOption && storageOption) {
+          setCartItems((prev) => {
+            const newItems = [...prev];
+            newItems[index] = {
+              ...item,
+              product,
+              colorOption,
+              storageOption,
+              error: undefined,
+            };
+            return newItems;
+          });
+        }
+      } catch {
+        // Handle error silently
       }
     }
   };
@@ -124,7 +142,7 @@ export default function CartPage() {
   }
 
   return (
-<div className={styles.cart__container}>
+    <div className={styles.cart__container}>
       <Header showCartIcon={false} />
 
       <div className={styles.cart__content}>
@@ -236,6 +254,9 @@ export default function CartPage() {
 
 
           <div className={styles.cart__summary}>
+            <div className={styles.cart__continueShoppingBtn}>
+              <ContinueShopping />
+            </div>
             <div className={styles.cart__totalRow}>
               <span>{CART_LABELS.TOTAL_LABEL}</span>
               <span className={styles.cart__totalPrice}>{formattedTotal}</span>
@@ -245,9 +266,6 @@ export default function CartPage() {
               <Button variant="primary" className={styles.cart__checkoutBtn}>
                 {CART_LABELS.PAY}
               </Button>
-            </div>
-            <div className={styles.cart__continueShoppingBtn}>
-              <ContinueShopping />
             </div>
           </div>
         </>
