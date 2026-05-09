@@ -2,11 +2,11 @@
 
 import { useEffect, useState, useRef } from 'react';
 
+import { getProducts } from '@/services/api';
 import { Card } from '@/components/Card';
 import { Header } from '@/components/Header';
 import { CardSkeleton } from '@/components/skeletons';
 import { useSearch } from '@/hooks/useSearch';
-import { getProducts } from '@/services/api';
 import { ProductListItem } from '@/types';
 import { SEARCH_LABELS } from '@/constants/labels.search';
 

@@ -3,10 +3,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Search } from '@/components/Search';
-import { useCart } from '@/store/CartContext';
-import { LABELS } from '@/constants/labels.general';
 import { A11Y_LABELS } from '@/constants/labels.a11y';
+import { LABELS } from '@/constants/labels.general';
+import { useCart } from '@/store/CartContext';
+import { Search } from '@/components/Search';
 
 import styles from './Header.module.scss';
 

@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+
 import { Search } from './Search';
 
 import '@testing-library/jest-dom';

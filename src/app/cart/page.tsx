@@ -3,14 +3,13 @@
 import Image from 'next/image';
 import { useEffect, useState, useCallback } from 'react';
 
-import { Button } from '@/components/Button';
-import { Header } from '@/components/Header';
-import { getProductById } from '@/services/api';
 import { useCart } from '@/store/CartContext';
 import { CartItemWithProduct, Product } from '@/types';
+import { getProductById } from '@/services/api';
+import { Button } from '@/components/Button';
+import { Header } from '@/components/Header';
 import { CART_LABELS } from '@/constants/labels.cart';
 import { LABELS } from '@/constants/labels.general';
-import { A11Y_LABELS } from '@/constants/labels.a11y';
 
 import { ContinueShopping } from './components/ContinueShopping/ContinueShopping';
 import styles from './page.module.scss';
